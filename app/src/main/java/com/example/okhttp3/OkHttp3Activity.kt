@@ -9,11 +9,13 @@ import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.MaterialDialog
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.*
 import java.io.IOException
 
-class OkHttp3Activity : AppCompatActivity(){
+class OkHttp3Activity : AppCompatActivity() {
     private val customAdapter by lazy { OkHttp3Adapter(this) }
     private var progressDialog: MaterialDialog? = null
     private val handler = Handler()
@@ -36,9 +38,9 @@ class OkHttp3Activity : AppCompatActivity(){
     }
 
     private fun initClick() {
-        next.setOnClickListener {
-            next()
-        }
+//        next.setOnClickListener {
+//            next()
+//        }
     }
 
     private fun initRecyclerView() {
@@ -64,8 +66,9 @@ class OkHttp3Activity : AppCompatActivity(){
         val request = Request.Builder()
             .url("https://qiita.com/api/v2/items?page=1&per_page=20")
             .build()
-        client.newCall(request).enqueue(object: Callback {
+        client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
+                println("onFailure call:$call e:$e")
                 handler.post {
                     swipeRefreshLayout.isRefreshing = false
                     customAdapter.refresh(listOf())
@@ -73,6 +76,7 @@ class OkHttp3Activity : AppCompatActivity(){
             }
 
             override fun onResponse(call: Call, response: Response) {
+                println("onResponse call:$call response:$response")
                 handler.post {
                     swipeRefreshLayout.isRefreshing = false
                     response.body?.string()?.also {
@@ -85,16 +89,16 @@ class OkHttp3Activity : AppCompatActivity(){
                     }
                 }
             }
+        })
+
     }
-
-
 
     companion object {
-        fun start(activity: Activity) = activity.startActivity(Intent(activity, OkHttp3Activity::class.java))
+        fun start(activity: Activity) =
+            activity.startActivity(Intent(activity, OkHttp3Activity::class.java))
     }
 }
-}
 
-private infix fun Callback.companion(any: Any): Callback {
-
-}
+//private infix fun Callback.companion(any: Any): Callback {
+//
+//}
