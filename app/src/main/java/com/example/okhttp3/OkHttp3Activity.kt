@@ -1,11 +1,10 @@
 package com.example.okhttp3
 
 import android.app.Activity
-import android.app.ProgressDialog.show
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.MaterialDialog
@@ -19,6 +18,7 @@ class OkHttp3Activity : AppCompatActivity() {
     private val customAdapter by lazy { OkHttp3Adapter(this) }
     private var progressDialog: MaterialDialog? = null
     private val handler = Handler()
+    var page = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,10 +38,42 @@ class OkHttp3Activity : AppCompatActivity() {
     }
 
     private fun initClick() {
-//        next.setOnClickListener {
-//            next()
-//        }
+        next.setOnClickListener {
+            page++
+            updateData2(page)
+        }
     }
+//    private fun next(i:Int){
+//
+//        val client = OkHttpClient()
+//        val request = Request.Builder()
+//            .url("https://qiita.com/api/v2/items?page=${i}&per_page=5")
+//            .build()
+//        client.newCall(request).enqueue(object : Callback {
+//            override fun onFailure(call: Call, e: IOException) {
+//                println("onFailure call:$call e:$e")
+//                handler.post {
+//                    swipeRefreshLayout.isRefreshing = false
+//                    customAdapter.refresh(listOf())
+//                }
+//            }
+//
+//            override fun onResponse(call: Call, response: Response) {
+//                println("onResponse call:$call response:$response")
+//                handler.post {
+//                    swipeRefreshLayout.isRefreshing = false
+//                    response.body?.string()?.also {
+//                        val gson = Gson()
+//                        val type = object : TypeToken<List<OkHttpItem>>() {}.type
+//                        val list = gson.fromJson<List<OkHttpItem>>(it, type)
+//                        customAdapter.refresh(list)
+//                    } ?: run {
+//                        customAdapter.refresh(listOf())
+//                    }
+//                }
+//            }
+//        })
+//    }
 
     private fun initRecyclerView() {
         recyclerView.apply {
@@ -54,17 +86,19 @@ class OkHttp3Activity : AppCompatActivity() {
     private fun initSwipeRefreshLayout() {
         swipeRefreshLayout.setOnRefreshListener {
             updateData()
+            updateData2(page)
         }
     }
 
     private fun initData() {
         updateData()
+        updateData2(page)
     }
 
-    private fun updateData() {
+    private fun updateData(page: Int) {
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("https://qiita.com/api/v2/items?page=1&per_page=20")
+            .url("https://qiita.com/api/v2/items?page=${page}&per_page=20")
             .build()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
@@ -92,6 +126,47 @@ class OkHttp3Activity : AppCompatActivity() {
         })
 
     }
+
+    private fun updateData2(page: Int) {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("https://qiita.com/api/v2/items?page=${page}&per_page=20")
+            .build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                println("onFailure call:$call e:$e")
+                handler.post {
+                    swipeRefreshLayout.isRefreshing = false
+                    customAdapter.refresh(listOf())
+                }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                println("onResponse call:$call response:$response")
+                handler.post {
+                    swipeRefreshLayout.isRefreshing = false
+                    response.body?.string()?.also {
+                        val gson = Gson()
+                        val type = object : TypeToken<List<OkHttpItem>>() {}.type
+                        val list = gson.fromJson<List<OkHttpItem>>(it, type)
+                        customAdapter.refresh(list)
+                    } ?: run {
+                        customAdapter.refresh(listOf())
+                    }
+                }
+            }
+        })
+
+    }
+
+//    private fun addList(): List<String> {
+//        val addlist = mutableListOf<String>()
+//        val number = i
+//        for (i in 0..number) {
+//            addlist.add("$i")
+//        }
+//        return addlist
+//    }
 
     companion object {
         fun start(activity: Activity) =

@@ -1,6 +1,8 @@
 package com.example.okhttp3
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,17 +12,13 @@ import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
-import okhttp3.internal.notify
-import java.security.AccessControlContext
 
-class OkHttp3Adapter(val context: Context) :
+class OkHttp3Adapter(private val context: Context) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val itemlist = mutableListOf<OkHttpItem>()
 
-    var callback: OkHttp3AdapterCallback? = null
-
-    fun refresh(list: List<OkHttpItem>) {
+    fun refresh(list:List<OkHttpItem>) {
         itemlist.apply {
             clear()
             addAll(list)
@@ -47,10 +45,6 @@ class OkHttp3Adapter(val context: Context) :
         val likeCountTextView: TextView = itemView.findViewById(R.id.likeCountTextView)
     }
 
-    interface OkHttp3AdapterCallback {
-        fun onClick(item: OkHttpItem)
-    }
-
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is ItemViewHolder)
             onBindViewHolder(holder, position)
@@ -63,9 +57,11 @@ class OkHttp3Adapter(val context: Context) :
         Picasso.get().load(currentItem.user.profile_image_url).into(holder.imageView)
         holder.rootView.setOnClickListener {
             Toast.makeText(context, "${currentItem.title}", Toast.LENGTH_SHORT).show()
-//            val intent = Intent(context, WebViewActivity::class.java)
-//            // intentにurlを渡すと...
-//            context.startActivity(intent)
+            // intentにurlを渡すと...
+            val uri=Uri.parse(currentItem.user.website_url)
+            val intent = Intent(Intent.ACTION_VIEW ,uri)
+            context.startActivity(intent)
         }
     }
+
 }
