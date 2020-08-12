@@ -52,13 +52,17 @@ class OkHttp3Adapter(private val context: Context) :
 
     private fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val currentItem = itemlist[position]
+        //get().load(currentItem.user.website_url).into(holder.titleTextView)
         holder.titleTextView.text = currentItem.title
         holder.likeCountTextView.text = "${currentItem.likes_count}"
         Picasso.get().load(currentItem.user.profile_image_url).into(holder.imageView)
         holder.rootView.setOnClickListener {
             Toast.makeText(context, "${currentItem.title}", Toast.LENGTH_SHORT).show()
+        }
+        holder.titleTextView.setOnClickListener{
             // intentにurlを渡すと...
-            val uri=Uri.parse(currentItem.user.website_url)
+            println("${currentItem.url}")
+            val uri=Uri.parse(currentItem.url)
             val intent = Intent(Intent.ACTION_VIEW ,uri)
             context.startActivity(intent)
         }
