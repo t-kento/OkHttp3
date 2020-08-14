@@ -31,6 +31,10 @@ class OkHttp3Adapter(private val context: Context) :
         notifyDataSetChanged()
     }
 
+    fun test(list: List<TestDataItem>) {
+
+    }
+
     override fun getItemCount(): Int = itemlist.size
 
     override fun onCreateViewHolder(
@@ -63,12 +67,16 @@ class OkHttp3Adapter(private val context: Context) :
         holder.rootView.setOnClickListener {
             Toast.makeText(context, "${currentItem.title}", Toast.LENGTH_SHORT).show()
         }
-        holder.titleTextView.setOnClickListener{
+        holder.titleTextView.setOnClickListener {
             // intentにurlを渡すと...
             println("${currentItem.url}")
             val uri=Uri.parse(currentItem.url)
-            val intent = Intent(Intent.ACTION_VIEW ,uri)
+            val intent = Intent(Intent.ACTION_VIEW, uri)
             context.startActivity(intent)
+
+//            val intent2 = Intent(context, DetailActivity::class.java)
+//            intent2.putExtra("key_url", currentItem.url)
+//            context.startActivity(intent2)
         }
     }
 
