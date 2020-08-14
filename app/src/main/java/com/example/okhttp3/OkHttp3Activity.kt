@@ -1,8 +1,5 @@
 package com.example.okhttp3
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +17,7 @@ class OkHttp3Activity : AppCompatActivity() {
     private val handler = Handler()
     private val addList:MutableList<OkHttpItem> = mutableListOf()
     var page = 1
+//    var isAdd:Boolean=false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,23 +63,24 @@ class OkHttp3Activity : AppCompatActivity() {
         updateData(page)
     }
 
-//    private fun addList(): List<String> {
-//        val addlist = mutableListOf<String>()
-//        return addList()
-//    }
+    private fun updateData(page:Int) {
+//        if(isAdd) {
+//            page++
+//        }else {
+//            page = 1
+//        }
 
-
-    private fun updateData(page: Int) {
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("https://qiita.com/api/v2/items?page=${page}&per_page=${page+1}" )
+            .url("https://qiita.com/api/v2/items?page=${page}&per_page=2" )
             .build()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 println("onFailure call:$call e:$e")
                 handler.post {
                     swipeRefreshLayout.isRefreshing = false
-                    customAdapter.refresh(listOf())
+//                    customAdapter.refresh(listOf())
+                    customAdapter.addList(listOf())
                 }
             }
 
@@ -93,26 +92,14 @@ class OkHttp3Activity : AppCompatActivity() {
                         val gson = Gson()
                         val type = object : TypeToken<List<OkHttpItem>>() {}.type
                         val list = gson.fromJson<List<OkHttpItem>>(it, type)
-                        customAdapter.refresh(list)
+//                        customAdapter.refresh(list)
+                        customAdapter.addList(list)
                     } ?: run {
-                        customAdapter.refresh(listOf())
+//                        customAdapter.refresh(listOf())
+                        customAdapter.addList(listOf())
                     }
                 }
             }
         })
     }
 }
-
-
-
-
-
-//    companion object {
-//        fun start(activity: Activity) =
-//            activity.startActivity(Intent(activity, OkHttp3Activity::class.java))
-//    }
-//}
-
-//private infix fun Callback.companion(any: Any): Callback {
-//
-//}

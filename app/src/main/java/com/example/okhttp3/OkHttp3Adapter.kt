@@ -26,6 +26,11 @@ class OkHttp3Adapter(private val context: Context) :
         notifyDataSetChanged()
     }
 
+    fun addList(list: List<OkHttpItem>){
+        itemlist.addAll(list)
+        notifyDataSetChanged()
+    }
+
     override fun getItemCount(): Int = itemlist.size
 
     override fun onCreateViewHolder(
@@ -52,7 +57,6 @@ class OkHttp3Adapter(private val context: Context) :
 
     private fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val currentItem = itemlist[position]
-        //get().load(currentItem.user.website_url).into(holder.titleTextView)
         holder.titleTextView.text = currentItem.title
         holder.likeCountTextView.text = "${currentItem.likes_count}"
         Picasso.get().load(currentItem.user.profile_image_url).into(holder.imageView)
