@@ -91,7 +91,8 @@ class OkHttp3Activity : AppCompatActivity() {
             }
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("https://qiita.com/api/v2/items?page=${page}&per_page=20")
+//            .url("https://qiita.com/api/v2/items?page=${page}&per_page=20")
+            .url("https://zipcloud.ibsnet.co.jp/api/search?zipcode=3191301")
             .build()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
@@ -113,20 +114,27 @@ class OkHttp3Activity : AppCompatActivity() {
                     swipeRefreshLayout.isRefreshing = false
                     response.body?.string()?.also {
                         val gson = Gson()
-                        val type = object : TypeToken<List<OkHttpItem>>() {}.type
-                        val list = gson.fromJson<List<OkHttpItem>>(it, type)
-                        if (isAdd) {
-                            customAdapter.addList(list)
-                        } else {
-                            customAdapter.refresh(list)
-                        }
-                    } ?: run {
-                        if (isAdd) {
-                            customAdapter.addList(listOf())
-                        } else {
-                            customAdapter.refresh(listOf())
+                        val postResponse = gson.fromJson(it, PostResponse::class.java)
+                        postResponse.results.forEach {
+                            println("postResponse 住所:${it.address1}${it.address2}${it.address3}")
                         }
                     }
+//                    response.body?.string()?.also {
+//                        val gson = Gson()
+//                        val type = object : TypeToken<List<OkHttpItem>>() {}.type
+//                        val list = gson.fromJson<List<OkHttpItem>>(it, type)
+//                        if (isAdd) {
+//                            customAdapter.addList(list)
+//                        } else {
+//                            customAdapter.refresh(list)
+//                        }
+//                    } ?: run {
+//                        if (isAdd) {
+//                            customAdapter.addList(listOf())
+//                        } else {
+//                            customAdapter.refresh(listOf())
+//                        }
+//                    }
                     isLoading=false
                 }
             }
