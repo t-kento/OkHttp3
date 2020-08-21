@@ -67,7 +67,11 @@ class OkHttp3Adapter(private val context: Context) :
             // intentにurlを渡すと...
             println("${currentItem.url}")
             val uri=Uri.parse(currentItem.url)
-            val intent = Intent(Intent.ACTION_VIEW ,uri)
+//            val intent = Intent(Intent.ACTION_VIEW ,uri)
+//            context.startActivity(intent)
+
+            val intent=Intent(context,WebActivity::class.java)
+            intent.putExtra("url","${currentItem.url}")
             context.startActivity(intent)
         }
     }
